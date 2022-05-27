@@ -12,8 +12,7 @@ import { getPrismicClient } from '../services/prismic';
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { type } from 'os';
+import { useState } from 'react';
 
 interface Post {
   uid?: string;
@@ -35,41 +34,23 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps) {
-  const [results, setResults] = useState([])
-  const [showButton, setShowButton] = useState('')
-
-  useEffect(() => {
-    const resultsUpdated = postsPagination.results
-    setShowButton(postsPagination.next_page)
-
-    setResults(resultsUpdated)
-
-  }, [])
+  const [results, setResults] = useState(postsPagination)
+  const [showButton, setShowButton] = useState(!!postsPagination.next_page)
 
   async function handleNextPage(url: string) {
-    const response = await fetch(url).then(data => data.json()).then(response => response)
+    await fetch(url).then(data => data.json()).then(response => {
+      const newPosts = { ...results }
 
-    let getNextPage = response.results
+      setResults({
+        ...newPosts,
+        next_page: response.next_page,
+        results: [...newPosts.results, ...response.results]
+      })
+      setShowButton(!!response.next_page)
 
-    const resultsUpdated = results
-
-    const newResultsUpdated = [...resultsUpdated, ...getNextPage]
-
-    const setTeste = new Set()
-
-    const testeFilter = newResultsUpdated.filter(i => {
-      const duplicate = setTeste.has(i.id)
-      setTeste.add(i.id)
-      return !duplicate
     })
-
-    if (showButton) {
-      setResults(testeFilter)
-      setShowButton(response.next_page)
-    } else {
-      return
-    }
   }
+
 
 
   return (
@@ -85,7 +66,7 @@ export default function Home({ postsPagination }: HomeProps) {
 
 
           {
-            results.map(post => (
+            results.results.map(post => (
 
               <div className={styles.Post} key={post.uid}>
                 <Link href={`/post/${post.uid}`} >
@@ -120,7 +101,7 @@ export default function Home({ postsPagination }: HomeProps) {
           }
 
           {
-            showButton ? (<button type='button' onClick={() => handleNextPage(showButton)}>Carregar mais posts</button>) : null
+            showButton ? (<button type='button' onClick={() => handleNextPage(results.next_page)}>Carregar mais posts</button>) : null
           }
         </div>
 
@@ -132,9 +113,9 @@ export default function Home({ postsPagination }: HomeProps) {
 
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient({});
-  const postsResponse = await prismic.getByType('posts', { pageSize: 1 });
+  const postsResponse = await prismic.getByType('posts', { pageSize: 1, lang: 'pt-BR' });
 
-  const postsPagination = postsResponse
+  const postsPagination = { ...postsResponse }
 
   return {
     props: {
