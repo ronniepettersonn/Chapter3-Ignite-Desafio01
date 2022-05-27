@@ -1,1 +1,46 @@
 // TODO
+.Header {
+    height: 105px;
+    display: flex;
+}
+
+.Container {
+    width: 100%;
+
+    img {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+    }
+
+    .ContainerWrapper {
+        padding: 0 10px;
+    }
+
+    .Content {
+        max-width: 700px;
+        margin: 0 auto;
+
+        h1 {
+            margin-top: 80px;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--heading);
+        }
+
+        .Info {
+            display: flex;
+            gap: 24px;
+            margin-top: 24px;
+            margin-bottom: 64px;
+
+            span {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: .875rem;
+                color: var(--info);
+            }
+        }
+    }
+}

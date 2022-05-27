@@ -1,1 +1,22 @@
 // TODO
+.container {
+    width: 100vw;
+}
+
+.content {
+    max-width: 1120px;
+    padding: 0 10px;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+
+    .nav {
+        width: 700px;
+        margin: 0 auto;
+
+        img {
+            width: 240px;
+        }
+    }
+}
